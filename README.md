@@ -31,26 +31,26 @@ You might need to run `sqlmesh plan` to create the necessary tables.
 
 Next, start the server pointed at that same duckdb file: `python3 -m buenavista.examples.duckdb_postgres db.db`.
 
-You should be able to connect to a server and issue queries
+You should be able to connect to a server over the psql protocol and issue queries
 
 ```
-psql (14.13 (Homebrew), server 9.3.duckdb)
-Type "help" for help.
+nico=> SELECT 
+          METRIC(total_orders)
+       FROM __semantic.__table;
 
-nico=> select 
-        METRIC(total_orders)
-from __semantic.__table;
  total_orders 
 --------------
             7
 (1 row)
 
-nico=> select 
-        event_date,
-        METRIC(total_orders)
-from __semantic.__table
-group by 1
-order by 1 desc;
+
+nico=> SELECT 
+          event_date,
+          METRIC(total_orders)
+       FROM __semantic.__table
+       GROUP BY 1
+       ORDER BY 1 DESC;
+
  event_date | total_orders 
 ------------+--------------
  2020-01-07 |            1
