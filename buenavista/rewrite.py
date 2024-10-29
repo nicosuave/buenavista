@@ -1,16 +1,24 @@
-from typing import Any, Callable, Dict, TypeVar
-
+from typing import Any, Callable, TypeVar
+import os
 import sqlglot
 import sqlglot.expressions as exp
+from sqlmesh.core.context import Context
+from sqlmesh.core.config import load_configs
 
 DecoratedCallable = TypeVar("DecoratedCallable", bound=Callable[..., Any])
-
 
 class Rewriter:
     def __init__(self, read: sqlglot.Dialect, write: sqlglot.Dialect):
         self._relations = {}
         self._read = read
         self._write = write
+        self._sqlmesh_context = None
+
+        sqlmesh_config_path = os.environ.get('SQLMESH_CONFIG_PATH')
+        if sqlmesh_config_path:
+            paths = [sqlmesh_config_path]
+            configs = load_configs(None, Context.CONFIG_TYPE, paths)
+            self._sqlmesh_context = Context(paths=paths, config=configs)
 
     def relation(self, name: str) -> Callable[[DecoratedCallable], DecoratedCallable]:
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
@@ -21,6 +29,10 @@ class Rewriter:
 
     def rewrite(self, sql: str) -> str:
         try:
+            if self._sqlmesh_context:
+                rewritten_query = self._sqlmesh_context.rewrite(sql)
+                sql = rewritten_query.sql(pretty=True, dialect=self._sqlmesh_context.config.dialect)
+
             stmts = self._read.parse(sql)
             ret = []
             for stmt in stmts:

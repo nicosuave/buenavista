@@ -30,6 +30,7 @@ setup(
         "fastapi>=0.109.0,<1.0.0",
         "pydantic>=2,<3",
         "sqlglot",
+        "sqlmesh",
     ],
     extras_require={
         "duckdb": ["duckdb", "pyarrow"],
