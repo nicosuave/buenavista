@@ -14,11 +14,10 @@ class Rewriter:
         self._write = write
         self._sqlmesh_context = None
 
-        sqlmesh_config_path = os.environ.get('SQLMESH_CONFIG_PATH')
-        if sqlmesh_config_path:
-            paths = [sqlmesh_config_path]
-            configs = load_configs(None, Context.CONFIG_TYPE, paths)
-            self._sqlmesh_context = Context(paths=paths, config=configs)
+        sqlmesh_config_path = os.environ.get('SQLMESH_CONFIG_PATH', './sqlmesh')
+        paths = [sqlmesh_config_path]
+        configs = load_configs(None, Context.CONFIG_TYPE, paths)
+        self._sqlmesh_context = Context(paths=paths, config=configs)
 
     def relation(self, name: str) -> Callable[[DecoratedCallable], DecoratedCallable]:
         def decorator(func: DecoratedCallable) -> DecoratedCallable:
@@ -31,6 +30,7 @@ class Rewriter:
         try:
             if self._sqlmesh_context:
                 rewritten_query = self._sqlmesh_context.rewrite(sql)
+                print(rewritten_query)
                 sql = rewritten_query.sql(pretty=True, dialect=self._sqlmesh_context.config.dialect)
 
             stmts = self._read.parse(sql)
