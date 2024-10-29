@@ -20,3 +20,44 @@ in order to start a Postgres server on `localhost:5433` backed by the DuckDB dat
 (or by an in-memory DuckDB database if you do not specify an argument.) You should be able to query the database via `psql` in
 another window by running `psql -h localhost -p 5433` (no database/username/password arguments required) or by using the DBeaver
 Postgres client connection.
+
+## SQLMesh Metric Layer Support
+
+This branch adds support for querying the SQLMesh semantic layer. 
+
+By default, SQLMesh config will be pulled from `./sqlmesh`, a sample SQLMesh project with some basic (contrived) metric definitions.
+
+You might need to run `sqlmesh plan` to create the necessary tables.
+
+Next, start the server pointed at that same duckdb file: `python3 -m buenavista.examples.duckdb_postgres db.db`.
+
+You should be able to connect to a server and issue queries
+
+```
+psql (14.13 (Homebrew), server 9.3.duckdb)
+Type "help" for help.
+
+nico=> select 
+        METRIC(total_orders)
+from __semantic.__table;
+ total_orders 
+--------------
+            7
+(1 row)
+
+nico=> select 
+        event_date,
+        METRIC(total_orders)
+from __semantic.__table
+group by 1
+order by 1 desc;
+ event_date | total_orders 
+------------+--------------
+ 2020-01-07 |            1
+ 2020-01-06 |            1
+ 2020-01-05 |            1
+ 2020-01-04 |            1
+ 2020-01-03 |            1
+ 2020-01-01 |            2
+(6 rows)
+```
