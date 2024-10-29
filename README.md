@@ -1,5 +1,7 @@
 # Buena Vista: A Programmable Postgres Proxy Server
 
+_(If you're here looking for the SQLMesh metric rewriter proxy, you probably want [this branch](https://github.com/nicosuave/buenavista/tree/add_sqlmesh_semantic_rewriting))_
+
 Buena Vista is a Python library that provides a [socketserver](https://docs.python.org/3/library/socketserver.html)-based implementation
 of the [Postgres wire protocol (PDF)](https://beta.pgcon.org/2014/schedule/attachments/330_postgres-for-the-wire.pdf).
 
