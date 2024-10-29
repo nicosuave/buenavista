@@ -23,15 +23,15 @@ Postgres client connection.
 
 ## SQLMesh Metric Layer Support
 
-This branch adds support for querying the SQLMesh semantic layer. 
+This branch adds support for querying a SQLMesh metric layer and a demo with duckdb and a sample project.
 
 By default, SQLMesh config will be pulled from `./sqlmesh`, a sample SQLMesh project with some basic (contrived) metric definitions.
 
 You might need to run `sqlmesh plan` to create the necessary tables.
 
-Next, start the server pointed at that same duckdb file: `python3 -m buenavista.examples.duckdb_postgres db.db`.
+To expose a pg server, start the server pointed at that same duckdb file: `python3 -m buenavista.examples.duckdb_postgres db.db`.
 
-You should be able to connect to a server over the psql protocol and issue queries
+You should be able to connect to a server over the pg protocol and issue queries
 
 ```
 nico=> SELECT 
