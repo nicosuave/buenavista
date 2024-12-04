@@ -162,6 +162,13 @@ class DuckDBSession(Session):
             == "SELECT setting FROM pg_catalog.pg_settings WHERE name='max_index_keys'"
         ):
             return "SELECT 32 as setting"
+        elif sql.startswith("SELECT n.oid, n.*, d.description FROM pg_catalog.pg_namespace") \
+                and "CAST('pg_namespace' AS REGCLASS)" in sql:
+            return """SELECT n.oid, n.*, d.description 
+                    FROM pg_catalog.pg_namespace AS n 
+                    LEFT JOIN pg_catalog.pg_description AS d 
+                    ON d.objoid = n.oid AND d.objsubid = 0 AND d.classoid = 'pg_namespace' 
+                    ORDER BY n.nspname"""
         elif "::regclass" in sql:
             return sql.replace("::regclass", "")
         elif "::regtype" in sql:
