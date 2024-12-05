@@ -162,9 +162,11 @@ class DuckDBSession(Session):
             == "SELECT setting FROM pg_catalog.pg_settings WHERE name='max_index_keys'"
         ):
             return "SELECT 32 as setting"
-        elif sql.startswith("SELECT n.oid, n.*, d.description FROM pg_catalog.pg_namespace") \
-                and "CAST('pg_namespace' AS REGCLASS)" in sql:
-            return sql.replace("CAST('pg_namespace' AS REGCLASS)", "'pg_namespace'")
+        elif m2 := re.search(r"CAST\('([^']+)' AS REGCLASS\)", sql):
+            name = m2.group(1)
+            target = f"CAST('{name}' AS REGCLASS)"
+            replace = f"'{name}'"
+            return sql.replace(target, replace)
         elif "::regclass" in sql:
             return sql.replace("::regclass", "")
         elif "::regtype" in sql:
