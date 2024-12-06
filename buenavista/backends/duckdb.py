@@ -162,6 +162,11 @@ class DuckDBSession(Session):
             == "SELECT setting FROM pg_catalog.pg_settings WHERE name='max_index_keys'"
         ):
             return "SELECT 32 as setting"
+        elif m2 := re.search(r"CAST\('([^']+)' AS REGCLASS\)", sql):
+            name = m2.group(1)
+            target = f"CAST('{name}' AS REGCLASS)"
+            replace = f"'{name}'"
+            return sql.replace(target, replace)
         elif "::regclass" in sql:
             return sql.replace("::regclass", "")
         elif "::regtype" in sql:
